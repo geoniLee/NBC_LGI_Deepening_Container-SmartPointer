@@ -18,9 +18,6 @@ protected:
 	virtual void BeginPlay() override;
 
 public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
 	// Sets default values for this actor's properties
 	AInventoryManager();
 
@@ -36,6 +33,9 @@ public:
 	
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	void AddItem(UItemBase* NewItem);
+
+	UFUNCTION(BlueprintCallable, Category = "Inventory")
+	void RemoveItem(UItemBase* NewItem);
 
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	void BuildItemMap();

@@ -15,9 +15,19 @@ UItemBase::UItemBase()
 
 bool UItemBase::CanUse(AInventoryManager* inventoryManager) const
 {
-	if (Count <= 0) return false;
-	if (!inventoryManager) return false;
-	if (!RequiredTitle.IsNone() && !inventoryManager->HasTitle(RequiredTitle)) return false;
+	if (Count <= 0) {
+		GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Red, TEXT("아이템 개수가 너무 적습니다"));
+		return false;
+	}
+	if (!inventoryManager) {
+
+		return false;
+	}
+	if (!RequiredTitle.IsNone() && !inventoryManager->HasTitle(RequiredTitle)) {
+		FString msg = FString::Printf(TEXT("요구하는 Title 미보유: %s"), *RequiredTitle.ToString());
+		GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Red, msg);
+		return false;
+	}
 
 	return true;
 }

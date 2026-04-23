@@ -8,7 +8,7 @@
 
 class AInventoryManager;
 
-UCLASS()
+UCLASS(BlueprintType, Blueprintable, Abstract)
 class NBC_CONTAINANDSPTR_API UItemBase : public UObject
 {
 	GENERATED_BODY()

@@ -3,13 +3,13 @@
 
 #include "InventoryManager.h"
 #include "ItemBase.h"
+#include "HPPotion.h"
 
 // Sets default values
 AInventoryManager::AInventoryManager()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
-
+	PrimaryActorTick.bCanEverTick = false;
 }
 
 // Called when the game starts or when spawned
@@ -17,13 +17,15 @@ void AInventoryManager::BeginPlay()
 {
 	Super::BeginPlay();
 
-}
+	UHPPotion* Potion = NewObject<UHPPotion>(this);
+	if (Potion == nullptr) {
+		GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Green, TEXT("체력 포션 생성 실패"));
+		return;
+	}
 
-// Called every frame
-void AInventoryManager::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
+	AddItem(Potion);
+	FString msg = FString::Printf(TEXT("체력 포션 생성 / 개수=%d"), Potion->Count);
+	GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Yellow, msg);
 }
 
 void AInventoryManager::AddItem(UItemBase* NewItem)
@@ -32,6 +34,17 @@ void AInventoryManager::AddItem(UItemBase* NewItem)
 
 	Inventory.Add(NewItem);
 	ItemMap.Add(NewItem->ItemID, NewItem);
+}
+
+void AInventoryManager::RemoveItem(UItemBase* RItem)
+{
+	if (RItem == nullptr) return;
+
+	Inventory.Remove(RItem);
+
+	if (!RItem->ItemID.IsNone()) {
+		ItemMap.Remove(RItem->ItemID);
+	}
 }
 
 void AInventoryManager::BuildItemMap()
@@ -78,8 +91,16 @@ bool AInventoryManager::CanUseItem(FName ItemID)
 void AInventoryManager::UseItemByID(FName ItemID)
 {
 	UItemBase* FoundItem = FindItemByID(ItemID);
-	if (FoundItem == nullptr) return;
+	if (FoundItem == nullptr) {
+		FString msg = FString::Printf(TEXT("아이템을 찾지 못함: %s"), *ItemID.ToString());
+		GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Red, msg);
+		return;
+	}
 	if (!FoundItem->CanUse(this)) return;
 
 	FoundItem->UseItem(this);
+
+	if (FoundItem->Count <= 0) {
+		RemoveItem(FoundItem);
+	}
 }
