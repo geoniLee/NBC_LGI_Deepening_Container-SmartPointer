@@ -3,7 +3,7 @@
 
 #include "HighHPPotion.h"
 
-UHighHPPotion::UHighHPPotion()
+UHighHPPotion::UHighHPPotion() : HealAmount(50)
 {
 	ItemID = FName(TEXT("102"));
 	ItemName = TEXT("상급 체력 포션");
